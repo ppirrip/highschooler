@@ -1,0 +1,321 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "highschooler",
+      "intents": [
+        {
+          "name": "AllocateTimeIntent",
+          "slots": [
+            {
+              "name": "priority",
+              "type": "PriorityType",
+              "samples": [
+                "{priority}"
+              ]
+            },
+            {
+              "name": "hour",
+              "type": "AMAZON.NUMBER",
+              "samples": [
+                "{hour}"
+              ]
+            },
+            {
+              "name": "action",
+              "type": "ActionType"
+            }
+          ],
+          "samples": [
+            "I want to {action} extra {hour} hours on {priority}",
+            "{action} {hour} hours into {priority}",
+            "let's {action} extra {hour} hours in {priority}"
+          ]
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AskScheduleEvent",
+          "slots": [
+            {
+              "name": "day",
+              "type": "eventDayType"
+            }
+          ],
+          "samples": [
+            "tell me events on {day}",
+            "what events do I have on {day}",
+            "what events do I have for {day}",
+            "get me events on {day}",
+            "get me events for {day}"
+          ]
+        },
+        {
+          "name": "HelloWorldIntent",
+          "samples": [
+            "hello",
+            "say hello",
+            "say hello world"
+          ]
+        },
+        {
+          "name": "JudgementIntent",
+          "samples": [
+            "start the week",
+            "let the week begin"
+          ]
+        },
+        {
+          "name": "MyNameIsIntent",
+          "slots": [
+            {
+              "name": "name",
+              "type": "AMAZON.US_FIRST_NAME"
+            }
+          ],
+          "samples": [
+            "my name is {name}",
+            "i am {name}",
+            "you can call me {name}"
+          ]
+        },
+        {
+          "name": "RestartGameIntent",
+          "samples": [
+            "try again",
+            "another game",
+            "go to next week"
+          ]
+        },
+        {
+          "name": "StartGameIntent",
+          "samples": [
+            "start game",
+            "begin game",
+            "game begin",
+            "game start",
+            "start highschooler",
+            "begin highschooler",
+            "highschooler begin",
+            "highschooler start",
+            "ready player one",
+            "ready"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "values": [
+            {
+              "name": {
+                "value": "spent",
+                "synonyms": []
+              }
+            },
+            {
+              "name": {
+                "value": "buy",
+                "synonyms": []
+              }
+            },
+            {
+              "name": {
+                "value": "allocate",
+                "synonyms": []
+              }
+            },
+            {
+              "name": {
+                "value": "put",
+                "synonyms": []
+              }
+            }
+          ],
+          "name": "ActionType"
+        },
+        {
+          "values": [
+            {
+              "name": {
+                "value": "school",
+                "synonyms": [
+                  "boring",
+                  "project",
+                  "test",
+                  "exam",
+                  "extracurricular"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "fun",
+                "synonyms": [
+                  "movie",
+                  "music",
+                  "concert"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "work",
+                "synonyms": []
+              }
+            },
+            {
+              "name": {
+                "value": "monday",
+                "synonyms": []
+              }
+            },
+            {
+              "name": {
+                "value": "tuesday",
+                "synonyms": []
+              }
+            },
+            {
+              "name": {
+                "value": "wednesday",
+                "synonyms": []
+              }
+            },
+            {
+              "name": {
+                "value": "thrusday",
+                "synonyms": []
+              }
+            },
+            {
+              "name": {
+                "value": "friday",
+                "synonyms": []
+              }
+            },
+            {
+              "name": {
+                "value": "saturday",
+                "synonyms": []
+              }
+            },
+            {
+              "name": {
+                "value": "sunday",
+                "synonyms": []
+              }
+            }
+          ],
+          "name": "eventDayType"
+        },
+        {
+          "values": [
+            {
+              "name": {
+                "value": "school",
+                "synonyms": [
+                  "project",
+                  "test",
+                  "exam",
+                  "extracurricular"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "fun",
+                "synonyms": [
+                  "movie",
+                  "concert",
+                  "music"
+                ]
+              }
+            },
+            {
+              "name": {
+                "value": "work",
+                "synonyms": []
+              }
+            }
+          ],
+          "name": "PriorityType"
+        }
+      ]
+    },
+    "dialog": {
+      "intents": [
+        {
+          "name": "AllocateTimeIntent",
+          "confirmationRequired": true,
+          "prompts": {
+            "confirmation": "Confirm.Intent-AllocateTimeIntent"
+          },
+          "slots": [
+            {
+              "name": "priority",
+              "type": "PriorityType",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Intent-AllocateTimeIntent.IntentSlot-priority"
+              }
+            },
+            {
+              "name": "hour",
+              "type": "AMAZON.NUMBER",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Intent-AllocateTimeIntent.IntentSlot-hour"
+              }
+            },
+            {
+              "name": "action",
+              "type": "ActionType",
+              "elicitationRequired": false,
+              "confirmationRequired": false
+            }
+          ]
+        }
+      ]
+    },
+    "prompts": [
+      {
+        "id": "Confirm.Intent-AllocateTimeIntent",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "you want to spent  {hour} hours in {priority}, am I correct?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Intent-AllocateTimeIntent.IntentSlot-priority",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "do you want to spent time on school, work, or fun"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Intent-AllocateTimeIntent.IntentSlot-hour",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "how many hours you want to put in"
+          }
+        ]
+      }
+    ]
+  }
+}
