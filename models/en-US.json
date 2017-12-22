@@ -48,7 +48,10 @@
           "slots": [
             {
               "name": "day",
-              "type": "eventDayType"
+              "type": "eventDayType",
+              "samples": [
+                "{day}"
+              ]
             }
           ],
           "samples": [
@@ -99,16 +102,13 @@
         {
           "name": "StartGameIntent",
           "samples": [
-            "start game",
             "begin game",
             "game begin",
             "game start",
-            "start highschooler",
             "begin highschooler",
             "highschooler begin",
             "highschooler start",
-            "ready player one",
-            "ready"
+            "ready player one"
           ]
         }
       ],
@@ -285,6 +285,21 @@
               "confirmationRequired": false
             }
           ]
+        },
+        {
+          "name": "AskScheduleEvent",
+          "confirmationRequired": false,
+          "slots": [
+            {
+              "name": "day",
+              "type": "eventDayType",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Intent-AskScheduleEvent.IntentSlot-day"
+              }
+            }
+          ]
         }
       ]
     },
@@ -313,6 +328,15 @@
           {
             "type": "PlainText",
             "value": "how many hours you want to put in"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Intent-AskScheduleEvent.IntentSlot-day",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "I am sorry I missed that. you can ask me to tell you events on monday etc."
           }
         ]
       }
