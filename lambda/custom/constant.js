@@ -1,4 +1,5 @@
 'use strict';
+const common = require('./common');
 
 const PRIORITY = {
     school:'school',

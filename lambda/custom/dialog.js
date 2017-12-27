@@ -13,6 +13,10 @@ const instructionGameDialog = [
     'you can just say put five hours into school etc., or say tell me events on Monday.',
 ];
 
+const instructionAllocateDialog = [
+    'just say start the week or put more or less hours into school, fun, work etc.',
+];
+
 const instructionDialog = [
     `every week you have ${constant.timeAvailable} hours`,
     'to spent on school, work and fun activities.',
@@ -24,7 +28,7 @@ const instructionDialog = [
 ];
 
 const startGamePrompt = [
-    'when you are ready, just said start game.<break time="0.5s"/> ready player one?'
+    'when you are ready, just said start game.<break time="0.2s"/> ready player one?'
 ];
 
 const eventSummaryDialog = [
@@ -39,5 +43,6 @@ module.exports = {
     instruction: instructionDialog,
     eventSummary: eventSummaryDialog,
     startGamePrompt: startGamePrompt,
-    instructionGameDialog: instructionGameDialog
+    instructionGameDialog: instructionGameDialog,
+    instructionAllocateDialog: instructionAllocateDialog
 };

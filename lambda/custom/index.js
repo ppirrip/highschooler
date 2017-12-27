@@ -26,7 +26,7 @@ function setSessionVar() {
 function gradeEval(grade) {
     switch(grade) {
         case 'A':
-            return 'you have very done well ';
+            return 'you have done very well ';
         case 'B':
             return 'you have done well ';
         case 'C':
@@ -116,7 +116,7 @@ var handlers = {
         const weekSummaryMsg = common.arrayToSpeech([
             `This week you have ${numEvents} events.`, 
             `${numSchoolEvents} school related,`,
-            `${numFinanceEvents} work related, and`,
+            `${numFinanceEvents} work related and`,
             `${numSocialEvents} events are for fun.`,
             `how do you want to spent the ${this.attributes.freeHours} hours?`,
             dialog.instructionGameDialog
@@ -133,7 +133,83 @@ var handlers = {
     },
     'AllocateTimeIntent': function () {
         console.log('AllocateTimeIntent');
-        this.emit('SayHello'); // just a place holder
+
+        if (this.event.request.dialogState === "STARTED") {
+            console.log('AllocateTimeIntent dialog STARTED');
+            this.emit(':delegate', this.event.request.intent);
+        } else if (this.event.request.dialogState !== 'COMPLETED') {
+            console.log('AllocateTimeIntent dialog IN_PROGRESS');
+            this.emit(':delegate');
+        } else {
+            // All the slots are filled (And confirmed if you choose to confirm slot/intent
+            // confirm doesn't make the slots valid!
+            const intent = this.event.request.intent;
+            const pri = intent.slots.priority.value;
+            const hr = parseInt(intent.slots.hour.value);
+
+            let allocateHrsMsg = [];
+            let allocateRepromptMsg = []
+
+            if (intent.confirmationStatus !== 'CONFIRMED') {
+                if (intent.confirmationStatus !== 'DENIED') {
+                    // not confirmed
+                    allocateHrsMsg = ['have you done planning your upcoming week?'];
+                    allocateHrsMsg += ` ${dialog.instructionAllocateDialog}`;
+                    allocateRepromptMsg = dialog.instructionAllocateDialog;
+                } else {
+                    // denied
+                    allocateHrsMsg += ` ${dialog.instructionGameDialog}`;
+                    allocateRepromptMsg = dialog.instructionGameDialog;
+                }
+            } else {
+                // all confirmed
+                switch (pri) {
+                    case 'school':
+                        this.attributes.allocatedHours.school = isNaN(hr) ? 0 : hr; 
+                        break;
+                    case 'work':
+                        this.attributes.allocatedHours.work = isNaN(hr) ? 0 : hr;
+                        break;
+                    case 'fun':
+                        this.attributes.allocatedHours.fun = isNaN(hr) ? 0 : hr;
+                        break;
+                    default:
+                        this.attributes.allocatedHours.school = isNaN(hr) ? 0 : hr; 
+                }
+                const allocatedHours = this.attributes.allocatedHours;
+                const totalHrs = allocatedHours.school + allocatedHours.work + allocatedHours.fun;
+                if (totalHrs > constant.timeAvailable) {
+                    allocateHrsMsg = [
+                        `you have planned ${totalHrs} hours for a ${constant.timeAvailable} hours week`,
+                        ` are you sure?`,
+                        ` you have put ${allocatedHours.school} hours for school activities`,
+                        ` ${allocatedHours.work} hours for part time work and`,
+                        ` ${allocatedHours.fun} hours for fun.`,
+                    ];
+                } else {
+                    allocateHrsMsg = [
+                        `you have put ${allocatedHours.school} hours for school activities`,
+                        ` ${allocatedHours.work} hours for part time work and`,
+                        ` ${allocatedHours.fun} hours for fun.`,
+                        ' are you ready to start the week?'
+                    ];
+                    
+                }
+                this.attributes.freeHours = constant.timeAvailable - totalHrs;
+            }
+            
+            allocateHrsMsg += ` ${dialog.instructionAllocateDialog}`;
+            allocateRepromptMsg = dialog.instructionAllocateDialog;
+            common.emitResponse.call(this,
+                `Schedule for ${pri}`,
+                common.removeSSML(allocateHrsMsg),
+                allocateHrsMsg,
+                allocateRepromptMsg
+            );
+
+            console.log('AllocateTimeIntent Pri:${pri} Hr:${hr}');
+            console.log(JSON.stringify(interaction));
+        }
     },
     'AskScheduleEvent': function () {
         console.log('AskScheduleIntent');
@@ -218,10 +294,66 @@ var handlers = {
     },
     'JudgementIntent': function () {
         console.log('JudegementIntent');
-        this.emit('SayHello'); // just a place holder
+
+        const weekSchedule = this.attributes['weekSchedule'];
+        
+        const f = (p) => sch.getEventsByPriority(this.attributes['weekSchedule'],p);
+        const schoolEvents = f(constant.priorities.school);
+        const funEvents = f(constant.priorities.social);
+        const workEvents = f(constant.priorities.finance);
+
+        const numSchoolEvents = schoolEvents.length;
+        const numFunEvents = funEvents.length;
+        const numWorkEvents = workEvents.length;
+        const numEvents = numSchoolEvents + numFunEvents + numWorkEvents;
+
+        const penalty = this.attributes.freeHours < 0 ? (Math.random() - 0.5)*Math.abs(this.attributes.freeHours) : 0;
+
+        const hrsForSchool = this.attributes.allocatedHours.school + penalty;
+        const hrsForFun = this.attributes.allocatedHours.fun + penalty;
+        const hrsForWork = this.attributes.allocatedHours.work + penalty;
+
+        for (const n of schoolEvents) {
+            n.timeAllocated = hrsForSchool / numSchoolEvents;
+        }
+
+        for (const n of funEvents) {
+            n.timeAllocated = hrsForFun / numFunEvents;
+        }
+
+        for (const n of workEvents) {
+            n.timeAllocated = hrsForWork / numWorkEvents;
+        }
+
+        const weeklyGrades = sch.weeklyReport(this.attributes.weekSchedule);
+        const reprompt = 'do you want to play again? Just say go to next week or another game'
+        const judgementMsg = common.arrayToSpeech([
+            `This week you have ${numEvents} events`, 
+            `you have put ${this.attributes.allocatedHours.school} hours on ${numSchoolEvents} school activities and ${gradeEval(weeklyGrades.school)}`,
+            `you have put ${this.attributes.allocatedHours.work} hours on ${numWorkEvents} work and ${gradeEval(weeklyGrades.finance)}, and`,
+            `you have put ${this.attributes.allocatedHours.fun} hours on ${numFunEvents} fun stuff and ${gradeEval(weeklyGrades.social)}.`,
+            reprompt
+        ]);
+
+        this.attributes.weekCount += 1;
+        common.emitResponse.call(this,
+            `Status report for week ${this.attributes.weekCount}`,
+            common.removeSSML(judgementMsg),
+            judgementMsg,
+            reprompt
+        );
     },
     'RestartGameIntent': function () {
         console.log('RestartGameIntent');
+
+        // reset states
+        this.attributes['weekSchedule'] = sch.generateWeekSchedule();
+        this.attributes['freeHours'] = constant.timeAvailable;
+        this.attributes['allocatedHours'] = {
+            'school' : 0,
+            'fun': 0,
+            'work': 0
+        };
         this.emit('NewSession');
     },
     'SessionEndedRequest' : function() {
