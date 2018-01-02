@@ -3,32 +3,30 @@
 const constant = require('./constant');
 
 const helpDialog = [
-    'welcome to highschooler challenge.', 
-    //'as a typical high school student', 
-    //'you juggles many conflicting priorities.',
-    'this game challenges you on how to manage your free time as a high school student.'
+    'you can say what\'s up this week, put five hours in school, tell me activities on Monday etc.', 
+];
+
+const welcomeDialog = [
+    'Welcome to highschooler.', 
+    'This game challenges you on how to manage your free time as a high school student.'
 ];
 
 const instructionGameDialog = [
-    'you can just say put five hours into school etc., or say tell me events on Monday.',
+    'You can just say put five hours into school etc., or say tell me activities on Monday.',
 ];
 
 const instructionAllocateDialog = [
-    'just say start the week or put more or less hours into school, fun, work etc.',
+    'Just say start the week or put hours into school, fun, work etc.',
 ];
 
 const instructionDialog = [
-    `every week you have ${constant.timeAvailable} hours`,
-    'to spent on school, work and fun activities.',
-    'you can said I want to put 5 extra hours in school etc.',
-    'you will get a status report every week.',
-    'when you are ready, just say game start.', 
-    '<break time="0.5s"/>',
-    'ready player one?'
+    ` Every week you have ${constant.timeAvailable} free hours for school, work and fun activities.`,
+    'You will get a status report every week based on how you spent those hours.',
+    'When you are ready, just say highschooler start.'
 ];
 
 const startGamePrompt = [
-    'when you are ready, just said start game.<break time="0.2s"/> ready player one?'
+    'When you are ready, just said highschooler start.'
 ];
 
 const eventSummaryDialog = [
@@ -38,7 +36,7 @@ const eventSummaryDialog = [
 const welcomeMsg = helpDialog[0];
 
 module.exports = {
-    welcome: [welcomeMsg],
+    welcome: welcomeDialog,
     help: helpDialog,
     instruction: instructionDialog,
     eventSummary: eventSummaryDialog,

@@ -57,50 +57,25 @@ var handlers = {
         // this launch when user utter ask, tell etc. that open a new session
         console.log('NewSession');
         setSessionVar.call(this);
-        
-        //this.emit('AMAZON.HelpIntent');
         this.emit('SayIntro');
     },
     'LaunchRequest': function () {
         // this launch when user utter something like 'open XXX'
         console.log('LaunchRequest');
         setSessionVar.call(this);
-
-        //this.emit('AMAZON.HelpIntent');
         this.emit('SayIntro');
     },
-    'HelloWorldIntent': function () {
-        // TODO: remove this
-        this.emit('SayHello');
-    },
-    'MyNameIsIntent': function () {
-        // TODO: remove this
-        this.emit('SayHelloName');
-    },
     'SayIntro': function () {
-        const helpMsg = common.arrayToSpeech(dialog.help) +
-            common.addLongPause(0.5) +
+        const welcomeMsg = common.arrayToSpeech(dialog.welcome) +
+            common.addLongPause(0.25) +
             common.arrayToSpeech(dialog.instruction);
 
         common.emitResponse.call(this,
-            'Ready Play One',
-            common.removeSSML(helpMsg),
-            helpMsg,
-            'when you are ready, just said start game. Ready Player One?'
+            'Welcome to Highschooler',
+            dialog.instruction.join(' '),
+            welcomeMsg,
+            common.arrayToSpeech(dialog.startGamePrompt)
         );
-    },
-    'SayHello': function () {
-        // TODO: remove this
-        this.response.speak('Hello World!')
-                     .cardRenderer('hello world', 'hello world');
-        this.emit(':responseReady');
-    },
-    'SayHelloName': function () {
-        // TODO: remove this
-        var name = this.event.request.intent.slots.name.value;
-        this.response.speak('Hello ' + name)
-            .cardRenderer('hello world', 'hello ' + name);
-        this.emit(':responseReady');
     },
     'StartGameIntent' : function () {
         console.log('StartGameIntent');
@@ -114,17 +89,14 @@ var handlers = {
         const numEvents = numSchoolEvents + numSocialEvents + numFinanceEvents;
 
         const weekSummaryMsg = common.arrayToSpeech([
-            `This week you have ${numEvents} events.`, 
-            `${numSchoolEvents} school related,`,
-            `${numFinanceEvents} work related and`,
-            `${numSocialEvents} events are for fun.`,
-            `how do you want to spent the ${this.attributes.freeHours} hours?`,
+            `This week you have ${numEvents} events and ${this.attributes.freeHours} free hours.`, 
+            `${numSchoolEvents} school related, ${numFinanceEvents} work related and ${numSocialEvents} events are for fun.`,
+            'How do you want to spent the free hours?',
             dialog.instructionGameDialog
         ]);
 
-        //this.emit('SayHello'); // just a place holder
         common.emitResponse.call(this,
-            'Ready to start a new week?',
+            'Ready to start the week?',
             common.removeSSML(weekSummaryMsg),
             weekSummaryMsg,
             dialog.instructionGameDialog
@@ -179,20 +151,19 @@ var handlers = {
                 const allocatedHours = this.attributes.allocatedHours;
                 const totalHrs = allocatedHours.school + allocatedHours.work + allocatedHours.fun;
                 if (totalHrs > constant.timeAvailable) {
-                    allocateHrsMsg = [
-                        `you have planned ${totalHrs} hours for a ${constant.timeAvailable} hours week`,
-                        ` are you sure?`,
-                        ` you have put ${allocatedHours.school} hours for school activities`,
+                    allocateHrsMsg = common.arrayToSpeech([
+                        `You have planned ${totalHrs} hours for a ${constant.timeAvailable} hours week, are you sure?`,
+                        `You have put ${allocatedHours.school} hours for school activities`,
                         ` ${allocatedHours.work} hours for part time work and`,
                         ` ${allocatedHours.fun} hours for fun.`,
-                    ];
+                    ]);
                 } else {
-                    allocateHrsMsg = [
-                        `you have put ${allocatedHours.school} hours for school activities`,
+                    allocateHrsMsg = common.arrayToSpeech([
+                        `You have put ${allocatedHours.school} hours for school activities`,
                         ` ${allocatedHours.work} hours for part time work and`,
                         ` ${allocatedHours.fun} hours for fun.`,
-                        ' are you ready to start the week?'
-                    ];
+                        ' Are you ready to start the week?'
+                    ]);
                     
                 }
                 this.attributes.freeHours = constant.timeAvailable - totalHrs;
@@ -264,14 +235,14 @@ var handlers = {
                         }
                         const priEvents = sch.getEventsByPriority(this.attributes['weekSchedule'],pri);
                         msg = priEvents.length !== 0 ? 
-                            common.arrayToSpeech([`for ${slot} you have`].concat(priEvents.map(x => x.description))) :
+                            common.arrayToSpeech([`for ${slot} you have:`].concat(priEvents.map(x => ` ${x.description}.`))) :
                             `for ${slot} you have nothing.`;
 
                     } else {
                         // player asked schedule for a specific day
                         const daySchedule = sch.getEventsByDay(this.attributes['weekSchedule'],slot);
                         msg = daySchedule.length !== 0 ? 
-                            common.arrayToSpeech([`on ${slot} you have`].concat(daySchedule.map(x => x.description))) :
+                            common.arrayToSpeech([`on ${slot} you have:`].concat(daySchedule.map(x => ` ${x.description}.`))) :
                             `on ${slot} you have nothing`;
                     }
                     msg += ` ${dialog.instructionGameDialog}`;
@@ -354,18 +325,18 @@ var handlers = {
             'fun': 0,
             'work': 0
         };
-        this.emit('NewSession');
+        this.emit('StartGameIntent');
     },
     'SessionEndedRequest' : function() {
         console.log('Session ended with reason: ' + this.event.request.reason);
     },
     'AMAZON.StopIntent' : function() {
-        this.response.speak('Bye');
+        this.response.speak('Alright. Have a nice day.');
         this.emit(':responseReady');
     },
     'AMAZON.HelpIntent' : function() {
         // TODO: might need a stateful help.
-        const helpMsg = common.arrayToSpeech(dialog.startGamePrompt);
+        const helpMsg = common.arrayToSpeech(dialog.help);
 
         common.emitResponse.call(this,
             'Help',
@@ -374,8 +345,7 @@ var handlers = {
             helpMsg);
     },
     'AMAZON.CancelIntent' : function() {
-        this.response.speak('Bye');
-        this.emit(':responseReady');
+        this.emit('AMAZON.HelpIntent');
     },
     'Unhandled' : function() {
         this.response.speak("Sorry, I didn't get that. You can try: 'alexa, hello world'" +

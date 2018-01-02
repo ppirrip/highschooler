@@ -41,7 +41,14 @@
         },
         {
           "name": "AMAZON.StopIntent",
-          "samples": []
+          "samples": [
+            "quit",
+            "quit highschooler",
+            "exit",
+            "exit highschooler",
+            "I don't want to play anymore",
+            "stop this game"
+          ]
         },
         {
           "name": "AskScheduleEvent",
@@ -55,11 +62,12 @@
             }
           ],
           "samples": [
-            "tell me events on {day}",
-            "what events do I have on {day}",
-            "what events do I have for {day}",
-            "get me events on {day}",
-            "get me events for {day}"
+            "tell me activities on {day}",
+            "what activities do I have on {day}",
+            "what activities do I have for {day}",
+            "get me activities on {day}",
+            "get me activities for {day}",
+            "show me activities for {day}"
           ]
         },
         {
@@ -87,13 +95,13 @@
             "highschooler begin",
             "highschooler start",
             "ready player one",
-            "tell me schedule next week",
-            "tell me what is on next week",
-            "next week schedule",
-            "next week calendar",
-            "tell me next week's calendar",
-            "what's up next week",
-            "what do I have next week"
+            "tell me activities this week",
+            "tell me what is on this week",
+            "this week schedule",
+            "this week activities",
+            "tell me this week's activities",
+            "what's up this week",
+            "what do I have this week"
           ]
         }
       ],
