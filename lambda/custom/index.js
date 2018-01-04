@@ -331,7 +331,7 @@ var handlers = {
         console.log('Session ended with reason: ' + this.event.request.reason);
     },
     'AMAZON.StopIntent' : function() {
-        this.response.speak('Alright. Have a nice day.');
+        this.response.speak('See you next time.');
         this.emit(':responseReady');
     },
     'AMAZON.HelpIntent' : function() {
@@ -345,7 +345,8 @@ var handlers = {
             helpMsg);
     },
     'AMAZON.CancelIntent' : function() {
-        this.emit('AMAZON.HelpIntent');
+        this.response.speak('Alright. Do you want another game? Just say another game, or stop').listen('you can just said stop or another game.');
+        this.emit(':responseReady');
     },
     'Unhandled' : function() {
         this.response.speak("Sorry, I didn't get that. You can try: 'alexa, hello world'" +

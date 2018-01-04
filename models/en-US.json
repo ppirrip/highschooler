@@ -1,7 +1,7 @@
 {
   "interactionModel": {
     "languageModel": {
-      "invocationName": "highschooler",
+      "invocationName": "high school week planner",
       "intents": [
         {
           "name": "AllocateTimeIntent",

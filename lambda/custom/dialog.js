@@ -7,7 +7,7 @@ const helpDialog = [
 ];
 
 const welcomeDialog = [
-    'Welcome to highschooler.', 
+    'Welcome to high school week planner.', 
     'This game challenges you on how to manage your free time as a high school student.'
 ];
 
